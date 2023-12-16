@@ -31,9 +31,10 @@ def gaussian_score(dataset):
     mu = torch.mean(X, dim=0)
     Sigma = torch.cov(X.T)
 
-    U, Lambda, _ = torch.svd(Sigma)
-    return {"mu": mu, "U": U, "Lambda": Lambda}
+    U, lambdas, _ = torch.svd(Sigma)
+    return {"mu": mu, "U": U, "lambdas": lambdas}
 
 def save_parameters(parameters, filename):
-    torch.save(TensorDict(parameters, batch_size=3072), filename)
+    for name, parameter in parameters.items(): 
+        torch.save(parameter, name + ".pt")
 
