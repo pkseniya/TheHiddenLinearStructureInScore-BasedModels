@@ -8,10 +8,10 @@ def configure_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("dataset_name", type=str, help="Name of the dataset")
     parser.add_argument("score_name", type=str, help="Name of the score to calculate")
-    parser.add_argument("parameters_dir", type=str, help="Calculated score parameters directory")
+    parser.add_argument("save_dir", type=str, help="Calculated score parameters directory")
     return parser
 
-def main(dataset_name, score_name, parameters_dir):
+def main(dataset_name, score_name, save_dir):
     dataset = load_dataset(dataset_name)
 
     if score_name == "isotropic":
@@ -21,7 +21,7 @@ def main(dataset_name, score_name, parameters_dir):
     else:
         raise ValueError(f"No {score_name}")
 
-    save_parameters(parameters, join(parameters_dir, score_name + ".pt"))
+    save_parameters(parameters, save_dir)
 
 
 if __name__ == "__main__":
