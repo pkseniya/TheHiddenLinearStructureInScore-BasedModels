@@ -232,9 +232,9 @@ def parse_int_list(s):
 @click.option('--S_max', 'S_max',          help='Stoch. max noise level', metavar='FLOAT',                          type=click.FloatRange(min=0), default='inf', show_default=True)
 @click.option('--S_noise', 'S_noise',      help='Stoch. noise inflation', metavar='FLOAT',                          type=float, default=1, show_default=True)
 
-@click.option('--skip_method',             help='which score estimator to use', metavar='STR',                      type=str)                         
-@click.option('--ds_params_dir',           help='where precomputed method params are located', metavar='STR',       type=str)
-@click.option('--sigma_skip',              help='sigma_min for linear sampling', metavar='FLOAT',                   type=float)
+@click.option('--skip_method',             help='which score estimator to use', metavar='STR',                      type=str, default=None)                         
+@click.option('--ds_params_dir',           help='where precomputed method params are located', metavar='STR',       type=str, default=None)
+@click.option('--sigma_skip',              help='sigma_min for linear sampling', metavar='FLOAT',                   type=float, default=None)
 
 @click.option('--solver',                  help='Ablate ODE solver', metavar='euler|heun',                          type=click.Choice(['euler', 'heun']))
 @click.option('--disc', 'discretization',  help='Ablate time step discretization {t_i}', metavar='vp|ve|iddpm|edm', type=click.Choice(['vp', 've', 'iddpm', 'edm']))
@@ -294,7 +294,7 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
             class_labels[:, class_idx] = 1
 
         # Generate images.
-        if 'skip_method' in sampler_kwargs:
+        if sampler_kwargs["skip_method"] is not None:
             linear_sampler_kwargs = get_linear_sampler_kwargs(sampler_kwargs, device)
             latents = linear_sampler(latents, **linear_sampler_kwargs)
 
