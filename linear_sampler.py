@@ -45,4 +45,11 @@ def gaussian_linear_sampler(x_T, sigma_max, sigma_min, mu, U, lambdas):
                     (x_T  - mu[None]).unsqueeze(-1) # [b_size, u.shape[0], 1]
                 ).squeeze(-1)
     return x_sigma_min.view(*shape)
+
+
+def isotropic_linear_sampler(x_T, sigma_max, sigma_min, mu, U, lambdas):
+    shape = x_T.shape
+    x_T = x_T.flatten(1)    
+    x_sigma_min = mu + (x_T - mu) * sigma_min / sigma_max
+    return x_sigma_min.view(*shape)
     
