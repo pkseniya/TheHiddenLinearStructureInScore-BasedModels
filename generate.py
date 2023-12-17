@@ -183,7 +183,6 @@ def ablation_sampler(
             denoised = net(x_prime / s(t_prime), sigma(t_prime), class_labels).to(torch.float64)
             d_prime = (sigma_deriv(t_prime) / sigma(t_prime) + s_deriv(t_prime) / s(t_prime)) * x_prime - sigma_deriv(t_prime) * s(t_prime) / sigma(t_prime) * denoised
             x_next = x_hat + h * ((1 - 1 / (2 * alpha)) * d_cur + 1 / (2 * alpha) * d_prime)
-            
     return x_next
 
 #----------------------------------------------------------------------------
@@ -318,7 +317,6 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
                 sampler_kwargs[param] = linear_sampler_kwargs[param].double()
 
         sampler_kwargs = {key: value for key, value in sampler_kwargs.items() if value is not None}
-
         have_ablation_kwargs = any(x in sampler_kwargs for x in ['solver', 'discretization', 'schedule', 'scaling'])
         sampler_fn = ablation_sampler if have_ablation_kwargs else edm_sampler
         images = sampler_fn(net, latents, class_labels, randn_like=rnd.randn_like, **sampler_kwargs)
