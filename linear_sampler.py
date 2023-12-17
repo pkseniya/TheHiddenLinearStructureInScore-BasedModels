@@ -27,16 +27,29 @@ def linear_sampler(*args, **kwargs):
 def gaussian_linear_sampler(x_T, sigma_max, sigma_min, mu, U, lambdas):
     shape = x_T.shape
     x_T = x_T.flatten(1)
+
     I = torch.eye(U.shape[0], device=U.device)
     add1 = (I - U @ U.T) * sigma_min / sigma_max
     
-    coefs = (sigma_min**2 + lambdas) / (sigma_min**2 + lambdas).sqrt()
-    add2 = (U * coefs[None]) @ U.T
+    coefs = (sigma_min**2 + lambdas) / (sigma_max**2 + lambdas).sqrt()
+    add2 = 0
+    for k in range(U.shape[1]):
+        uk = U[:, k].unsqueeze(1)
+        add2 += coefs[k] * (uk @ uk.T)
+
+    add = add1 + add2
 
     x_sigma_min = mu[None] + \
                 torch.bmm(
-                    (add1 + add2)[None].expand(shape[0], -1, -1),
-                    (x_T  - mu[None])[:, :, None]
-                )[:, :, 0]
+                    add[None].expand(shape[0], -1, -1), # [b_size, u.shape[0], u.shape[0]]
+                    (x_T  - mu[None]).unsqueeze(-1) # [b_size, u.shape[0], 1]
+                ).squeeze(-1)
+    return x_sigma_min.view(*shape)
+
+
+def isotropic_linear_sampler(x_T, sigma_max, sigma_min, mu, U, lambdas):
+    shape = x_T.shape
+    x_T = x_T.flatten(1)    
+    x_sigma_min = mu + (x_T - mu) * sigma_min / sigma_max
     return x_sigma_min.view(*shape)
     
