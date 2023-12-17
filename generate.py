@@ -275,6 +275,11 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
     if dist.get_rank() == 0:
         torch.distributed.barrier()
 
+    # Prepare config for linear sampling
+    linear_sampler_kwargs = None
+    if sampler_kwargs["skip_method"] is not None:
+        linear_sampler_kwargs = get_linear_sampler_kwargs(sampler_kwargs, device)
+
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
     for batch_seeds in tqdm.tqdm(rank_batches, unit='batch', disable=(dist.get_rank() != 0)):
@@ -294,8 +299,7 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
             class_labels[:, class_idx] = 1
 
         # Generate images.
-        if sampler_kwargs["skip_method"] is not None:
-            linear_sampler_kwargs = get_linear_sampler_kwargs(sampler_kwargs, device)
+        if linear_sampler_kwargs is not None:
             latents = linear_sampler(latents, **linear_sampler_kwargs)
             latents /= sampler_kwargs["sigma_max"]
 
