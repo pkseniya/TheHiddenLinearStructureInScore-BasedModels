@@ -52,9 +52,13 @@ def save_parameters(parameters, save_dir):
         torch.save(parameter, save_dir / f"{name}.pt")
 
 def get_gaussian_score(x, sigma, mu, lambdas, U):
+    shape = x.shape
+    x = x.flatten(1)
+    mu = mu.flatten()
+
     I = torch.eye(U.shape[0], device=U.device)
-    lambda_sigma = torch.diag(lambdas / (lambdas + sigma**2))
-    score = torch.bmm((I - U @ lambda_sigma @ U.T).unsqueeze(0).expand(x.shape[0], -1, -1), (mu - x).flatten(1).unsqueeze(-1)).squeeze(-1) / sigma**2
+    coefs = torch.diag(lambdas / (sigma**2 + lambdas))
+    mul = I - U @ coefs @ U.T
 
-    return score
-
+    score = F.linear(mu[None] - x, weight=(mul)) / sigma**2
+    return score.view(*shape)
