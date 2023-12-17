@@ -20,7 +20,7 @@ import dnnlib
 from torch_utils import distributed as dist
 
 from linear_sampler import get_linear_sampler_kwargs, linear_sampler
-from linear_structure.utils import get_gaussian_score
+from linear_structure.utils import get_gaussian_score, get_isotropic_score
 
 #----------------------------------------------------------------------------
 # Proposed EDM sampler (Algorithm 2).
@@ -171,9 +171,11 @@ def ablation_sampler(
         if scores_dir is not None:
             neural_score = (denoised - x_hat / s(t_hat)) / sigma(t_hat) ** 2
             gaussian_score = get_gaussian_score(x_hat, sigma(t_hat), mu, lambdas, U)
+            isotropic_score = get_isotropic_score(x_hat, sigma(t_hat), mu)
 
-            torch.save(neural_score.flatten(1).cpu(), os.path.join(scores_dir, 'neural', f'{i}.pt'))
+            torch.save(neural_score.cpu(), os.path.join(scores_dir, 'neural', f'{i}.pt'))
             torch.save(gaussian_score.cpu(), os.path.join(scores_dir, 'gaussian', f'{i}.pt'))
+            torch.save(isotropic_score.cpu(), os.path.join(scores_dir, 'isotropic', f'{i}.pt'))
         
         # Apply 2nd order correction.
         if solver == 'euler' or i == num_steps - 1:
