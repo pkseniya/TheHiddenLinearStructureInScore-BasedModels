@@ -70,7 +70,7 @@ def ablation_sampler(
     num_steps=18, sigma_min=None, sigma_max=None, rho=7,
     solver='heun', discretization='edm', schedule='linear', scaling='none',
     epsilon_s=1e-3, C_1=0.001, C_2=0.008, M=1000, alpha=1,
-    S_churn=0, S_min=0, S_max=float('inf'), S_noise=1,
+    S_churn=0, S_min=0, S_max=float('inf'), S_noise=1, scores_dir=None,
 ):
     assert solver in ['euler', 'heun']
     assert discretization in ['vp', 've', 'iddpm', 'edm']
@@ -174,6 +174,10 @@ def ablation_sampler(
             denoised = net(x_prime / s(t_prime), sigma(t_prime), class_labels).to(torch.float64)
             d_prime = (sigma_deriv(t_prime) / sigma(t_prime) + s_deriv(t_prime) / s(t_prime)) * x_prime - sigma_deriv(t_prime) * s(t_prime) / sigma(t_prime) * denoised
             x_next = x_hat + h * ((1 - 1 / (2 * alpha)) * d_cur + 1 / (2 * alpha) * d_prime)
+            score = (denoised - x_prime / s(t_prime)) / sigma(t_prime) ** 2
+            
+            if scores_dir is not None:
+                torch.save(score.flatten(1).cpu(), os.path.join(scores_dir, f"{i}.pt"))
 
     return x_next
 
@@ -240,6 +244,8 @@ def parse_int_list(s):
 @click.option('--disc', 'discretization',  help='Ablate time step discretization {t_i}', metavar='vp|ve|iddpm|edm', type=click.Choice(['vp', 've', 'iddpm', 'edm']))
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
+
+@click.option('--scores_dir',              help='Directory to save scores', metavar='STR',                          type=str)
 
 def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
     """Generate random images using the techniques described in the paper

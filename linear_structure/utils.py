@@ -50,3 +50,11 @@ def save_parameters(parameters, save_dir):
     save_dir.mkdir(parents=True, exist_ok=True)
     for name, parameter in parameters.items(): 
         torch.save(parameter, save_dir / f"{name}.pt")
+
+def get_gaussian_score(x, sigma,  mu, U, lambdas):
+    I = torch.eye(U.shape[0], device=U.device)
+    lambda_sigma = torch.diag(lambdas / (lambdas + sigma**2))
+    score = torch.bmm((I - U @ lambda_sigma @ U.T).unsqueeze(0).expand(x.shape[0], -1, -1), (x - mu).flatten(1).unsqueeze(-1)).squeeze(-1) / sigma**2
+
+    return score
+
