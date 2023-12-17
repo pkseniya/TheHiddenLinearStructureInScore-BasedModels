@@ -300,8 +300,9 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
 
         # Generate images.
         if linear_sampler_kwargs is not None:
+            latents *= linear_sampler_kwargs["sigma_max"]
             latents = linear_sampler(latents, **linear_sampler_kwargs)
-            latents /= sampler_kwargs["sigma_max"]
+            latents /= linear_sampler_kwargs["sigma_min"]
 
         sampler_kwargs = {key: value for key, value in sampler_kwargs.items() if value is not None}
         have_ablation_kwargs = any(x in sampler_kwargs for x in ['solver', 'discretization', 'schedule', 'scaling'])
