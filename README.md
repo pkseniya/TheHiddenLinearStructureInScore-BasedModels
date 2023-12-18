@@ -259,7 +259,7 @@ originally shared under the [MIT license](https://github.com/openai/guided-diffu
 
 [Kseniia Petrushina](https://github.com/pkseniya)
 
-[Nikita Kornilov]()
+[Nikita Kornilov](https://github.com/Jhomanik)
 
 [Bair Mikhailov](https://github.com/MikhailovBair)
 
