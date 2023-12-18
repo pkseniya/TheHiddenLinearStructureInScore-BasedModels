@@ -39,12 +39,12 @@ bash run_plot_scores.sh
 
 ## Developers 
 
-[Daniil Shlenskii](https://github.com/daniil-shlenskii)
+[Daniil Shlenskii](https://github.com/daniil-shlenskii) &ndash; Code
 
-[Kseniia Petrushina](https://github.com/pkseniya)
+[Kseniia Petrushina](https://github.com/pkseniya) &ndash; Code
 
-[Nikita Kornilov](https://github.com/Jhomanik)
+[Nikita Kornilov](https://github.com/Jhomanik) &ndash; Presentation, README
 
-[Bair Mikhailov](https://github.com/MikhailovBair)
+[Bair Mikhailov](https://github.com/MikhailovBair) &ndash; Presentation, README
 
-[Arina Chumachenko](https://github.com/arina-chumachenko)
+[Arina Chumachenko](https://github.com/arina-chumachenko) &ndash; Presentation, README
