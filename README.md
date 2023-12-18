@@ -1,4 +1,4 @@
-![image](https://github.com/pkseniya/TheHiddenLinearStructureInScore-BasedModels/assets/56446605/1c20bdee-e5d5-45d3-b194-e2e9a30b52b9)# The Hidden Linear Structure in Score-Based Models and its Application
+# The Hidden Linear Structure in Score-Based Models and its Application
 
 ## Discription of our project
 
