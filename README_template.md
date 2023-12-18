@@ -13,13 +13,6 @@ They demonstrated this through empirical validation of pre-trained images diffus
 Their finding of the linear structure in the score-based model has implications for better model design and data pre-processing.
 
 
-## Methods (short description of our project)
-
-- 
-- 
-- 
-- 
-
 
 ## Getting started
 
