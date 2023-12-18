@@ -1,4 +1,6 @@
 import torch
+import torch.nn.functional as F
+
 from torchvision.datasets import CIFAR10
 import torchvision.transforms as transforms
 
