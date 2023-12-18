@@ -20,6 +20,7 @@ import dnnlib
 from torch_utils import distributed as dist
 
 from linear_sampler import get_linear_sampler_kwargs, linear_sampler
+from linear_structure.utils import get_gaussian_score, get_isotropic_score
 
 #----------------------------------------------------------------------------
 # Proposed EDM sampler (Algorithm 2).
@@ -70,7 +71,8 @@ def ablation_sampler(
     num_steps=18, sigma_min=None, sigma_max=None, rho=7,
     solver='heun', discretization='edm', schedule='linear', scaling='none',
     epsilon_s=1e-3, C_1=0.001, C_2=0.008, M=1000, alpha=1,
-    S_churn=0, S_min=0, S_max=float('inf'), S_noise=1,
+    S_churn=0, S_min=0, S_max=float('inf'), S_noise=1, scores_dir=None,
+    mu=None, lambdas=None, U=None,
 ):
     assert solver in ['euler', 'heun']
     assert discretization in ['vp', 've', 'iddpm', 'edm']
@@ -166,6 +168,15 @@ def ablation_sampler(
         x_prime = x_hat + alpha * h * d_cur
         t_prime = t_hat + alpha * h
 
+        if scores_dir is not None:
+            neural_score = (denoised - x_hat / s(t_hat)) / sigma(t_hat) ** 2
+            gaussian_score = get_gaussian_score(x_hat, sigma(t_hat), mu, lambdas, U)
+            isotropic_score = get_isotropic_score(x_hat, sigma(t_hat), mu)
+
+            torch.save(neural_score.cpu(), os.path.join(scores_dir, 'neural', f'{i}.pt'))
+            torch.save(gaussian_score.cpu(), os.path.join(scores_dir, 'gaussian', f'{i}.pt'))
+            torch.save(isotropic_score.cpu(), os.path.join(scores_dir, 'isotropic', f'{i}.pt'))
+        
         # Apply 2nd order correction.
         if solver == 'euler' or i == num_steps - 1:
             x_next = x_hat + h * d_cur
@@ -241,6 +252,8 @@ def parse_int_list(s):
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
 
+@click.option('--scores_dir',              help='Directory to save scores', metavar='STR',                          type=str)
+
 def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
     """Generate random images using the techniques described in the paper
     "Elucidating the Design Space of Diffusion-Based Generative Models".
@@ -303,6 +316,9 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
             latents *= linear_sampler_kwargs["sigma_max"]
             latents = linear_sampler(latents, **linear_sampler_kwargs)
             latents /= linear_sampler_kwargs["sigma_min"]
+
+            for param in ['mu', 'lambdas', 'U']:
+                sampler_kwargs[param] = linear_sampler_kwargs[param].double()
 
         sampler_kwargs = {key: value for key, value in sampler_kwargs.items() if value is not None}
         have_ablation_kwargs = any(x in sampler_kwargs for x in ['solver', 'discretization', 'schedule', 'scaling'])

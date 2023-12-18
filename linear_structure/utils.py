@@ -50,3 +50,22 @@ def save_parameters(parameters, save_dir):
     save_dir.mkdir(parents=True, exist_ok=True)
     for name, parameter in parameters.items(): 
         torch.save(parameter, save_dir / f"{name}.pt")
+
+def get_gaussian_score(x, sigma, mu, lambdas, U):
+    shape = x.shape
+    x = x.flatten(1)
+    mu = mu.flatten()
+
+    I = torch.eye(U.shape[0], device=U.device)
+    coefs = torch.diag(lambdas / (sigma**2 + lambdas))
+    mul = I - U @ coefs @ U.T
+
+    score = F.linear(mu[None] - x, weight=(mul)) / sigma**2
+    return score.view(*shape)
+
+def get_isotropic_score(x, sigma, mu):
+    shape = x.shape
+    x = x.flatten(1)
+    score = (mu - x) / sigma**2
+
+    return score.view(*shape)
