@@ -1,14 +1,26 @@
-## Elucidating the Design Space of Diffusion-Based Generative Models (EDM)<br><sub>Official PyTorch implementation of the NeurIPS 2022 paper</sub>
+# The Hidden Linear Structure in Score-Based Models and its Application
 
-![Teaser image](./docs/teaser-1920x640.jpg)
+## Discription of our project
 
-**Elucidating the Design Space of Diffusion-Based Generative Models**<br>
-Tero Karras, Miika Aittala, Timo Aila, Samuli Laine
-<br>https://arxiv.org/abs/2206.00364<br>
+In our project we recreated methods described in the [paper](https://arxiv.org/pdf/2311.10892.pdf) about accelerating sampling process from diffusion models. 
+Score-based models have achieved remarkable results in the generative modeling of many domains. 
+By learning the gradient of smoothed data distribution, we can iteratively generate samples from complex distribution e.g. natural images. 
+However, is there any universal structure in the gradient field that will eventually be learned by any neural network? 
+In the paper the authors aim to find such structures through a normative analysis of the score function. 
+First, they derived the closed-form solution to the scored-based model with a Gaussian score. 
+The authors claimed that for well-trained diffusion models, the learned score at a high noise scale is well approximated by the linear score of Gaussian. 
+They demonstrated this through empirical validation of pre-trained images diffusion model and theoretical analysis of the score function. 
+Their finding of the linear structure in the score-based model has implications for better model design and data pre-processing.
 
-Abstract: *We argue that the theory and practice of diffusion-based generative models are currently unnecessarily convoluted and seek to remedy the situation by presenting a design space that clearly separates the concrete design choices. This lets us identify several changes to both the sampling and training processes, as well as preconditioning of the score networks. Together, our improvements yield new state-of-the-art FID of 1.79 for CIFAR-10 in a class-conditional setting and 1.97 in an unconditional setting, with much faster sampling (35 network evaluations per image) than prior designs. To further demonstrate their modular nature, we show that our design changes dramatically improve both the efficiency and quality obtainable with pre-trained score networks from previous work, including improving the FID of a previously trained ImageNet-64 model from 2.07 to near-SOTA 1.55, and after re-training with our proposed improvements to a new SOTA of 1.36.*
 
-For business inquiries, please visit our website and submit the form: [NVIDIA Research Licensing](https://www.nvidia.com/en-us/research/inquiries/)
+## Methods (short description of our project)
+
+- 
+- 
+- 
+- 
+
+
 
 ## Requirements
 
@@ -24,7 +36,7 @@ For business inquiries, please visit our website and submit the form: [NVIDIA Re
 
 ## Getting started
 
-To reproduce the main results from our paper, simply run:
+To reproduce the main results from our paper, just run:
 
 ```.bash
 python example.py
@@ -213,6 +225,10 @@ The following table lists the exact training configurations that we used to obta
 
 For ImageNet-64, we ran the training on four NVIDIA DGX A100 nodes, each containing 8 Ampere GPUs with 80 GB of memory. To reduce the GPU memory requirements, we recommend either training the model with more GPUs or limiting the per-GPU batch size with `--batch-gpu`. To set up multi-node training, please consult the [torchrun documentation](https://pytorch.org/docs/stable/elastic/run.html).
 
+
+## Our methods
+ 
+
 ## License
 
 Copyright &copy; 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
@@ -229,18 +245,22 @@ originally shared under the [MIT license](https://github.com/openai/guided-diffu
 ## Citation
 
 ```
-@inproceedings{Karras2022edm,
-  author    = {Tero Karras and Miika Aittala and Timo Aila and Samuli Laine},
-  title     = {Elucidating the Design Space of Diffusion-Based Generative Models},
-  booktitle = {Proc. NeurIPS},
-  year      = {2022}
+@article{wang2023hidden,
+  title={The Hidden Linear Structure in Score-Based Models and its Application},
+  author={Wang, Binxu and Vastola, John J},
+  journal={arXiv preprint arXiv:2311.10892},
+  year={2023}
 }
 ```
 
-## Development
+## Developers 
 
-This is a research reference implementation and is treated as a one-time code drop. As such, we do not accept outside code contributions in the form of pull requests.
+[Daniil Shlenskii](https://github.com/daniil-shlenskii)
 
-## Acknowledgments
+[Kseniia Petrushina](https://github.com/pkseniya)
 
-We thank Jaakko Lehtinen, Ming-Yu Liu, Tuomas Kynk&auml;&auml;nniemi, Axel Sauer, Arash Vahdat, and Janne Hellsten for discussions and comments, and Tero Kuosmanen, Samuel Klenberg, and Janne Hellsten for maintaining our compute infrastructure.
+[Nikita Kornilov]()
+
+[Bair Mikhailov](https://github.com/MikhailovBair)
+
+[Arina Chumachenko](https://github.com/arina-chumachenko)
