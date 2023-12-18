@@ -8,13 +8,13 @@ BATCH=1024
 
 SEEDS="0-49999"
 
-BASE_CUDA_VISIBLE_DEVICES="0,5"
+BASE_CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
 N_PROC=$((1 + ${#BASE_CUDA_VISIBLE_DEVICES} / 2))
 
 BASE_N_STEPS=18
-COMMON_SAVE_DIR=images_with_skips
+COMMON_SAVE_DIR=images_with_skips_2
 
-rm -r ${COMMON_SAVE_DIR}; mkdir ${COMMON_SAVE_DIR}
+mkdir $COMMON_SAVE_DIR
 
 
 N_SKIPS=(0 1 2 3 4 5 6 7 8 10 12)
@@ -35,6 +35,6 @@ do
 
     CUDA_VISIBLE_DEVICES=${BASE_CUDA_VISIBLE_DEVICES:0:1}
     NUM_IMAGES=$(ls -l ${SAVE_DIR}/*.png | wc -l)
-    python -u fid.py calc --images=${SAVE_DIR} --num=${NUM_IMAGES}\
+    python -u fid.py calc --images=${SAVE_DIR} --num=${NUM_IMAGES} \
         --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/cifar10-32x32.npz > ${COMMON_SAVE_DIR}/${N_SKIP}.txt
 done
