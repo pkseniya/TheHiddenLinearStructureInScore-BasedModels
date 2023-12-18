@@ -23,10 +23,23 @@ Their finding of the linear structure in the score-based model has implications 
 
 ## Getting started
 
-To reproduce the main results from our paper, just run:
+To reproduce the main results from the paper run:
 
+1. Obtain $$\mu$$ and $$\Sigma$$ for CIFAR10 dataset using
 ```
-python generate.py
+python linear_structure/get_parameters.py CIFAR10 gaussian gaussian_params
+```
+2. Calculate the FID score for the various numbers of steps skipped using analytical teleportation by running
+```
+bash run_experiments_with_skips.sh
+```
+3. Process the results of the calculations and get a graph of the dependence of the FID on the number of skipped steps with
+```
+python process_experiments_with_skips.py
+```
+4. Additionally you can compare approximation error between neural score and analytical scores (isotropic and gaussian):
+```
+bash run_plot_scores.sh
 ```
 
 
