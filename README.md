@@ -1,4 +1,4 @@
-# The Hidden Linear Structure in Score-Based Models and its Application
+![image](https://github.com/pkseniya/TheHiddenLinearStructureInScore-BasedModels/assets/56446605/1c20bdee-e5d5-45d3-b194-e2e9a30b52b9)# The Hidden Linear Structure in Score-Based Models and its Application
 
 ## Discription of our project
 
@@ -43,7 +43,7 @@ bash run_plot_scores.sh
 
 [Kseniia Petrushina](https://github.com/pkseniya)
 
-[Nikita Kornilov]()
+[Nikita Kornilov](https://github.com/Jhomanik)
 
 [Bair Mikhailov](https://github.com/MikhailovBair)
 
