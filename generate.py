@@ -19,6 +19,8 @@ import PIL.Image
 import dnnlib
 from torch_utils import distributed as dist
 
+from linear_sampler import get_linear_sampler_kwargs, linear_sampler
+
 #----------------------------------------------------------------------------
 # Proposed EDM sampler (Algorithm 2).
 
@@ -230,6 +232,10 @@ def parse_int_list(s):
 @click.option('--S_max', 'S_max',          help='Stoch. max noise level', metavar='FLOAT',                          type=click.FloatRange(min=0), default='inf', show_default=True)
 @click.option('--S_noise', 'S_noise',      help='Stoch. noise inflation', metavar='FLOAT',                          type=float, default=1, show_default=True)
 
+@click.option('--skip_method',             help='which score estimator to use', metavar='STR',                      type=str, default=None)                         
+@click.option('--ds_params_dir',           help='where precomputed method params are located', metavar='STR',       type=str, default=None)
+@click.option('--sigma_skip',              help='sigma_min for linear sampling', metavar='FLOAT',                   type=float, default=None)
+
 @click.option('--solver',                  help='Ablate ODE solver', metavar='euler|heun',                          type=click.Choice(['euler', 'heun']))
 @click.option('--disc', 'discretization',  help='Ablate time step discretization {t_i}', metavar='vp|ve|iddpm|edm', type=click.Choice(['vp', 've', 'iddpm', 'edm']))
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
@@ -269,6 +275,11 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
     if dist.get_rank() == 0:
         torch.distributed.barrier()
 
+    # Prepare config for linear sampling
+    linear_sampler_kwargs = None
+    if sampler_kwargs["skip_method"] is not None:
+        linear_sampler_kwargs = get_linear_sampler_kwargs(sampler_kwargs, device)
+
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
     for batch_seeds in tqdm.tqdm(rank_batches, unit='batch', disable=(dist.get_rank() != 0)):
@@ -288,6 +299,11 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
             class_labels[:, class_idx] = 1
 
         # Generate images.
+        if linear_sampler_kwargs is not None:
+            latents *= linear_sampler_kwargs["sigma_max"]
+            latents = linear_sampler(latents, **linear_sampler_kwargs)
+            latents /= linear_sampler_kwargs["sigma_min"]
+
         sampler_kwargs = {key: value for key, value in sampler_kwargs.items() if value is not None}
         have_ablation_kwargs = any(x in sampler_kwargs for x in ['solver', 'discretization', 'schedule', 'scaling'])
         sampler_fn = ablation_sampler if have_ablation_kwargs else edm_sampler
