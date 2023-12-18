@@ -25,7 +25,7 @@ Their finding of the linear structure in the score-based model has implications 
 
 To reproduce the main results from the paper run:
 
-1. Obtain $$\mu$$ and $$\Sigma$$ for CIFAR10 dataset using
+1. Obtain $\mu$ and $\Sigma$ for CIFAR10 dataset using
 ```
 python linear_structure/get_parameters.py CIFAR10 gaussian gaussian_params
 ```
