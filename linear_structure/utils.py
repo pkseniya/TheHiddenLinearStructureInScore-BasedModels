@@ -64,6 +64,8 @@ def get_gaussian_score(x, sigma, mu, lambdas, U):
     return score.view(*shape)
 
 def get_isotropic_score(x, sigma, mu):
+    shape = x.shape
+    x = x.flatten(1)
     score = (mu - x) / sigma**2
 
-    return score
+    return score.view(*shape)
